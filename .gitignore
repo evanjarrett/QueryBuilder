@@ -1,0 +1,21 @@
+#Ignore Eclipse Configs
+.classpath
+.project
+.metadata
+.settings
+.recommenders
+#Ignore IntelliJ Configs
+.idea
+.metadata
+*.iml
+#Ignore Binaries
+bin/
+#Ignore builds
+build/
+target/
+out/
+#Ignore Gradle Files
+.gradle
+gradle.properties
+#Ignore Android Studio Files
+local.properties
