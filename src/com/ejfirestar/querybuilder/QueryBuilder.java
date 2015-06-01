@@ -43,6 +43,23 @@ public class QueryBuilder {
      * Starts the QueryBuilder.
      *
      * @param connection The Connection to the database.
+     * @param raw_query  The query String.
+     * @throws SQLException
+     */
+    public QueryBuilder(Connection connection, String raw_query) throws SQLException {
+        if (connection != null) {
+            this.connection = connection;
+            statement = connection.prepareStatement(raw_query);
+        }
+        else {
+            throw new SQLException();
+        }
+    }
+
+    /**
+     * Starts the QueryBuilder.
+     *
+     * @param connection The Connection to the database.
      * @param debug      Boolean specifying whether to print the run duration.
      * @throws SQLException
      */
@@ -68,6 +85,7 @@ public class QueryBuilder {
             statement = connection.prepareStatement(raw_query);
         }
         else {
+            closeConnection();
             throw new SQLException();
         }
         return this;
@@ -81,7 +99,14 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setInt(Integer value) throws SQLException {
-        return setInt(index++, value);
+        try {
+            return setInt(index++, value);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -93,8 +118,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setInt(int column_index, Integer value) throws SQLException {
-        statement.setInt(column_index, value);
-        return this;
+        try {
+            statement.setInt(column_index, value);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -105,7 +137,14 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setDouble(Double value) throws SQLException {
-        return setDouble(index++, value);
+        try {
+            return setDouble(index++, value);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -117,8 +156,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setDouble(int column_index, Double value) throws SQLException {
-        statement.setDouble(column_index, value);
-        return this;
+        try {
+            statement.setDouble(column_index, value);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -129,7 +175,14 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setLong(Long value) throws SQLException {
-        return setLong(index++, value);
+        try {
+            return setLong(index++, value);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -141,8 +194,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setLong(int column_index, Long value) throws SQLException {
-        statement.setDouble(column_index, value);
-        return this;
+        try {
+            statement.setDouble(column_index, value);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -153,7 +213,14 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setString(String value) throws SQLException {
-        return setString(index++, value);
+        try {
+            return setString(index++, value);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -165,8 +232,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setString(int column_index, String value) throws SQLException {
-        statement.setString(column_index, value);
-        return this;
+        try {
+            statement.setString(column_index, value);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -177,7 +251,14 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setBoolean(Boolean value) throws SQLException {
-        return setBoolean(index++, value);
+        try {
+            return setBoolean(index++, value);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -189,8 +270,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setBoolean(int column_index, Boolean value) throws SQLException {
-        statement.setBoolean(column_index, value);
-        return this;
+        try {
+            statement.setBoolean(column_index, value);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -200,9 +288,15 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder executeQuery() throws SQLException {
-        result = statement.executeQuery();
-        closeConnection();
-        return this;
+        try {
+            result = statement.executeQuery();
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -210,13 +304,19 @@ public class QueryBuilder {
      * This should be used when performing queries that do not require data to be returned<br>
      * such as <code>INSERT</code>, <code>UPDATE</code> or <code>DELETE</code>;
      *
-     * @return an updated QueryBuilder
-     * @throws SQLException
+     * @return -1 if error occurs
      */
-    public int update() throws SQLException {
-        int result = statement.executeUpdate();
-        closeConnection();
-        return result;
+    public int update() {
+        try {
+            return statement.executeUpdate();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            closeConnection();
+        }
+        return -1;
     }
 
     /**
@@ -226,9 +326,16 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public boolean nextRow() throws SQLException {
-        //Move to next row
-        row++;
-        return result.next();
+        try {
+            //Move to next row
+            row++;
+            return result.next();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -240,10 +347,17 @@ public class QueryBuilder {
      * @throws SQLException
      */
     public QueryBuilder setRow(int row) throws SQLException {
-        //Update current row
-        this.row = row;
-        result.absolute(row);
-        return this;
+        try {
+            //Update current row
+            this.row = row;
+            result.absolute(row);
+            return this;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            closeConnection();
+            throw new SQLException(ex);
+        }
     }
 
     /**
@@ -264,6 +378,9 @@ public class QueryBuilder {
             e.printStackTrace();
             return false;
         }
+        finally {
+            closeConnection();
+        }
     }
 
     /**
@@ -283,6 +400,9 @@ public class QueryBuilder {
         catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            closeConnection();
+        }
         return null;
     }
 
@@ -300,6 +420,9 @@ public class QueryBuilder {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            closeConnection();
         }
         return null;
     }
@@ -321,6 +444,9 @@ public class QueryBuilder {
         catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            closeConnection();
+        }
     }
 
     /**
@@ -341,6 +467,9 @@ public class QueryBuilder {
         catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            closeConnection();
+        }
     }
 
     /**
@@ -360,21 +489,40 @@ public class QueryBuilder {
         catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            closeConnection();
+        }
         return fetch_all;
     }
 
     /**
      * Closes the connection.<br>
-     * Notes: The connection will be closed automatically if you use <code>executeQuery</code> or <code>update</code>
-     *
-     * @throws SQLException
+     * Notes: The connection will be closed automatically if you use <code>fetch</code> or <code>update</code>
      */
-    public void closeConnection() throws SQLException {
+    public void closeConnection() {
         if (connection != null) {
-            connection.close();
+            try {
+                connection.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (result != null) {
+            try {
+                result.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         if (statement != null) {
-            statement.close();
+            try {
+                statement.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         if (debug) {
             debugRunDuration();
@@ -410,7 +558,12 @@ public class QueryBuilder {
         }
         // We want to use Integers, SQL tries to give us Longs
         if (o instanceof Long && !clazz.equals(Long.class)) {
-            return clazz.cast(((Long) o).intValue());
+            if (clazz.equals(Integer.class)) {
+                return clazz.cast(((Long) o).intValue());
+            }
+            if (clazz.equals(Short.class)) {
+                return clazz.cast(((Long) o).shortValue());
+            }
         }
         return clazz.cast(o);
     }

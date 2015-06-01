@@ -2,6 +2,7 @@ package com.ejfirestar.querybuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +37,14 @@ public class Column<T> {
         if (o instanceof Long && !clazz.equals(Long.class)) {
             Integer i = ((Long) o).intValue();
             list.add(clazz.cast(i));
+            return;
         }
-        else {
-            list.add(clazz.cast(o));
+        if (o instanceof Timestamp && !clazz.equals(Timestamp.class)) {
+            Long time = ((Timestamp) o).getTime();
+            list.add(clazz.cast(time));
+            return;
         }
+        list.add(clazz.cast(o));
     }
 
     /**
@@ -89,7 +94,12 @@ public class Column<T> {
             return null;
         }
         if (value instanceof Long && !clazz.equals(Long.class)) {
-            return clazz.cast(((Long) value).intValue());
+            if (clazz.equals(Integer.class)) {
+                return clazz.cast(((Long) value).intValue());
+            }
+            if (clazz.equals(Short.class)) {
+                return clazz.cast(((Long) value).shortValue());
+            }
         }
         return clazz.cast(value);
     }
